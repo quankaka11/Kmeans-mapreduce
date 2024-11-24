@@ -23,7 +23,10 @@ public abstract class Distance {
         name = name.toLowerCase();
         if (Objects.equals(name, "eucl")) {
             return new EuclideanDistance();
+        } else if (Objects.equals(name, "cosine")) {
+            return new CosineDistance();
         }
         return null;
     }
+
 }
