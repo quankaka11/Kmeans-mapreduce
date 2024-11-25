@@ -16,9 +16,32 @@ args = parser.parse_args()
 
 
 def nparray_to_str(X):
-    to_save = '\n'.join([' '.join(str(X[i])[1:-1].split()) for i in range(len(X))])
-    return to_save
+    return '\n'.join([' '.join(map(str, row)) for row in X])
 
+def kmeans_plusplus_init(points, k):
+
+    centroids = []
+    # Chọn tâm cụm đầu tiên ngẫu nhiên từ dữ liệu
+    centroids.append(points[np.random.choice(range(len(points)))])
+
+    for _ in range(1, k):
+        # Tính khoảng cách nhỏ nhất từ mỗi điểm đến các centroid đã chọn
+        distances = np.min(
+            [np.sum((points - centroid) ** 2, axis=1) for centroid in centroids],
+            axis=0
+        )
+        # Xác suất tỷ lệ với khoảng cách
+        probabilities = distances / distances.sum()
+        cumulative_probs = np.cumsum(probabilities)
+        r = np.random.rand()
+
+        # Chọn tâm cụm mới dựa trên xác suất
+        for j, p in enumerate(cumulative_probs):
+            if r < p:
+                centroids.append(points[j])
+                break
+
+    return np.array(centroids)
 
 def main(src_img, dst_folder, k):
     # files to be created
@@ -35,9 +58,9 @@ def main(src_img, dst_folder, k):
     print(f'Points saved in: {points_path}')
 
     # generate and save uniformly sampled centroids
-    s = np.random.uniform(low=img.min(), high=img.max(), size=(k, 3))
+    centroids = kmeans_plusplus_init(img, k)
     tmp_labels = np.arange(1, k + 1).reshape((k, 1))
-    clusters = np.hstack((tmp_labels, s))
+    clusters = np.hstack((tmp_labels, centroids))
 
     with open(clusters_path, 'w') as f:
         f.write(nparray_to_str(clusters))
