@@ -16,7 +16,9 @@ args = parser.parse_args()
 
 
 def nparray_to_str(X):
-    return '\n'.join([' '.join(map(str, row)) for row in X])
+    to_save = '\n'.join([' '.join(str(X[i])[1:-1].split()) for i in range(len(X))])
+    return to_save
+
 
 def kmeans_plusplus_init(points, k):
 
@@ -43,6 +45,7 @@ def kmeans_plusplus_init(points, k):
 
     return np.array(centroids)
 
+
 def main(src_img, dst_folder, k):
     # files to be created
     points_path = join(dst_folder, 'points.txt')
@@ -58,9 +61,9 @@ def main(src_img, dst_folder, k):
     print(f'Points saved in: {points_path}')
 
     # generate and save uniformly sampled centroids
-    centroids = kmeans_plusplus_init(img, k)
+    s = kmeans_plusplus_init(img, k)
     tmp_labels = np.arange(1, k + 1).reshape((k, 1))
-    clusters = np.hstack((tmp_labels, centroids))
+    clusters = np.hstack((tmp_labels, s))
 
     with open(clusters_path, 'w') as f:
         f.write(nparray_to_str(clusters))
