@@ -1,5 +1,3 @@
-import argparse
-
 from glob import glob
 from os.path import join, isdir, isfile
 from skimage.feature import hog
@@ -8,15 +6,6 @@ from PIL import Image
 
 import cv2
 import numpy as np
-
-parser = argparse.ArgumentParser(description='This script visualizes estimated clusters.')
-
-parser.add_argument('--clusters_path', type=str, help='/home/phamphong/Kmeans-mapreduce/Resources/Input/clusters1.txt', default='/home/phamphong/Kmeans-mapreduce/Resources/Input/clusters1.txt')
-parser.add_argument('--src_img', type=str, help='/home/phamphong/Kmeans-mapreduce/data_prep_scripts/sample_images/image1.jpg', default='/home/phamphong/Kmeans-mapreduce/data_prep_scripts/sample_images/image1.jpg')
-parser.add_argument('--dst_img', type=str, help='/home/phamphong/Kmeans-mapreduce/data_prep_scripts/sample_images/image3.jpg', default='/home/phamphong/Kmeans-mapreduce/data_prep_scripts/sample_images/image3.jpg')
-
-
-args = parser.parse_args()
 
 
 def load_clusters(path):
@@ -40,7 +29,7 @@ def load_nparray(file):
 
     return np.stack(data).astype(np.float64)
 
-#---CMYK---
+"""#---CMYK---
 def bgr_to_cmyk(image):
     bgr = image.astype(np.float32) / 255.0
     K = 1 - np.max(bgr, axis=2)
@@ -53,6 +42,7 @@ def bgr_to_cmyk(image):
     CMYK = np.stack((C, M, Y, K), axis=2) * 255.0
     return CMYK.astype(np.uint8)
 #######
+"""
 
 
 def main(clusters_path, src_img, dst_img):
@@ -60,21 +50,21 @@ def main(clusters_path, src_img, dst_img):
 
 #------------------------------------------------------------------------------------------
 
-    """#---RGB---
+    #---RGB---
     img = cv2.imread(src_img)
     shape = img.shape
 
     img = img.reshape((-1, 3))
     ##########
-    """
 
-    #---CMYK---
-    img = cv2.imread(src_img)
-    img_cmyk = bgr_to_cmyk(img)  # Chuyển sang không gian CMYK
-    shape = img_cmyk.shape
-    img = img_cmyk.reshape((-1, 4))  # Định dạng thành 2D
+
+    """#---CMYK---
+    # img = cv2.imread(src_img)
+    # img_cmyk = bgr_to_cmyk(img)
+    # shape = img_cmyk.shape
+    # img = img_cmyk.reshape((-1, 4))
     ###########
-
+    """
 
 
     """#---HOG---
@@ -103,17 +93,17 @@ def main(clusters_path, src_img, dst_img):
 
 #-------------------------------------------------------------------------
 
-    """#---RGB---
+    #---RGB---
     cv2.imwrite(dst_img, new_image.reshape(shape))
     #########
-    """
 
-    #---CMYK---
+
+    """#---CMYK---
     result_cmyk = new_image.reshape(shape).astype(np.uint8)
     image_cmyk = Image.fromarray(result_cmyk, mode="CMYK")
     image_cmyk.save(dst_img)
     ##########
-
+    """
 
     """#---HOG---
     cv2.imwrite(dst_img, hog_image)
@@ -123,5 +113,7 @@ def main(clusters_path, src_img, dst_img):
 
 
 if __name__ == '__main__':
-    args = parser.parse_args()
-    main(args.clusters_path, args.src_img, args.dst_img)
+    clusters_path = "/home/vu/Kmeans-mapreduce/Input/clusters1.txt"
+    src_img = "/home/vu/Kmeans-mapreduce/data_prep_scripts/sample_images/image1.jpg"
+    dst_img = "/home/vu/Kmeans-mapreduce/data_prep_scripts/sample_images/image3.jpg"
+    main(clusters_path, src_img, dst_img)
